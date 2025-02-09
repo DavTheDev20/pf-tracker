@@ -1,0 +1,17 @@
+{
+  "name": "pf-tracker",
+  "version": "1.0.0",
+  "description": "Full stack application for tracking personal finances using the OG stack",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "cd server && npx tsc --watch",
+    "server": "cd server && nodemon ./out/app.js",
+    "client": "cd client && npm run dev"
+  },
+  "author": "Davin Reid",
+  "license": "MIT",
+  "dependencies": {
+    "pf-tracker": "file:"
+  }
+}
