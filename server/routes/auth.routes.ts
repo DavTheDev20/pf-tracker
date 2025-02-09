@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model";
@@ -53,9 +53,10 @@ type UserType = {
  *                  type: string
  */
 authRouter
+  // @ts-ignore
   .post("/register", (req, res) => {
     if (Object.keys(req.body).length === 0) {
-      res.status(400).json({ success: false, error: `Body cannot be emtpy` });
+      res.status(400).json({ success: false, error: `Body cannot be empty` });
       return;
     }
     try {
@@ -64,12 +65,12 @@ authRouter
       bcrypt.genSalt(saltRounds, (saltErr, salt) => {
         if (saltErr) {
           console.log(saltErr);
-          return;
+          return res.status(500).end("Salt error, please try again");
         }
         bcrypt.hash(body.password, salt, async (genErr, hash) => {
           if (genErr) {
             console.log(genErr);
-            return;
+            return res.status(500).end("Hashing error, please try again");
           }
           const newUser = new User({
             firstName: body.firstName,
@@ -80,19 +81,19 @@ authRouter
           try {
             const result = await newUser.save();
             const token = jwt.sign({ email: result.email }, <string>JWT_SECRET);
-            return res.cookie(token, COOKIE_SECRET, {
+            res.cookie(token, COOKIE_SECRET, {
               httpOnly: true,
               sameSite: "strict",
               maxAge: 24 * 60 * 60 * 1000,
             });
-            //res.status(200).json({ success: true, token });
+            return res.status(200).json({ success: true });
           } catch (error) {
-            res.status(400).json({ success: false, error });
+            return res.status(400).json({ success: false, error });
           }
         });
       });
     } catch (err) {
-      res.status(400).json({ success: false, err });
+      return res.status(400).json({ success: false, err });
     }
   })
   /**
@@ -149,7 +150,7 @@ authRouter
         sameSite: "strict",
         maxAge: 24 * 60 * 60 * 1000,
       });
-      res.status(200).json({ succss: true });
+      return res.status(200).json({ succss: true });
     });
   });
 
