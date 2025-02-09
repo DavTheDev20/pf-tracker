@@ -9,7 +9,7 @@ const verifyToken: RequestHandler = (req, res, next) => {
   if (!cookies) {
     return res.status(403).end("No cookie");
   }
-  const token = cookies.split("=")[0];
+  const token = cookies.split("=")[1];
   if (!token) {
     return res
       .status(401)

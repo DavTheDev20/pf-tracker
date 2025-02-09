@@ -21,7 +21,7 @@ type UserType = {
  * /api/auth/register:
  *   post:
  *     summary: User Registration
- *     description: Returns an auth jsonwebtoken to authenticate user
+ *     description: Creates a new user and sets the JWT as an HTTP Only cookie to authenticate the user
  *     requestBody:
  *      required: true
  *      content:
@@ -41,7 +41,6 @@ type UserType = {
  *                type: string
  *     responses:
  *       200:
- *         description: A jsonwebtoken string
  *         content:
  *          application/json:
  *            schema:
@@ -49,8 +48,6 @@ type UserType = {
  *              properties:
  *                success:
  *                  type: boolean
- *                token:
- *                  type: string
  */
 authRouter
   // @ts-ignore
@@ -81,7 +78,7 @@ authRouter
           try {
             const result = await newUser.save();
             const token = jwt.sign({ email: result.email }, <string>JWT_SECRET);
-            res.cookie(token, COOKIE_SECRET, {
+            res.cookie("token", token, {
               httpOnly: true,
               sameSite: "strict",
               maxAge: 24 * 60 * 60 * 1000,
@@ -101,7 +98,7 @@ authRouter
    * /api/auth/login:
    *   post:
    *     summary: User Login
-   *     description: Returns an auth jsonwebtoken to authenticate user
+   *     description: Sets the JWT as an HTTP Only cookie to authenticate the user
    *     requestBody:
    *      required: true
    *      content:
@@ -115,7 +112,6 @@ authRouter
    *                type: string
    *     responses:
    *       200:
-   *         description: A jsonwebtoken string
    *         content:
    *          application/json:
    *            schema:
@@ -123,8 +119,6 @@ authRouter
    *              properties:
    *                success:
    *                  type: boolean
-   *                token:
-   *                  type: string
    */
   .post("/login", async (req, res) => {
     const { body }: { body: { email: string; password: string } } = req;
@@ -145,13 +139,60 @@ authRouter
       }
 
       const token = jwt.sign({ email: user.email }, <string>JWT_SECRET);
-      res.cookie(token, COOKIE_SECRET, {
+      res.cookie("token", token, {
         httpOnly: true,
         sameSite: "strict",
         maxAge: 24 * 60 * 60 * 1000,
       });
       return res.status(200).json({ succss: true });
     });
+  })
+  /**
+   * @swagger
+   * /api/auth/logout:
+   *   post:
+   *     summary: User Logout
+   *     description: Removes the JWT token for the user
+   *     responses:
+   *       200:
+   *         content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                success:
+   *                  type: boolean
+   */
+  .post("/logout", (req, res) => {
+    res.clearCookie("token", { path: "/" });
+    res.status(200).json({ success: true });
+  })
+  .get("/auth-status", async (req, res) => {
+    try {
+      const token = req.headers.cookie?.split("=")[1];
+      if (!token) {
+        res.status(401).json({ user: null });
+        return;
+      }
+
+      const decoded: any = jwt.verify(token, <string>process.env.JWT_SECRET);
+      const user = await User.findOne({ email: decoded.email });
+      if (!user) {
+        res.status(401).json({ user: null });
+        return;
+      }
+      res.status(200).json({
+        user: {
+          email: user?.email,
+          firstName: user?.firstName,
+          lastName: user?.lastName,
+        },
+      });
+      return;
+    } catch (err) {
+      res.status(500).json({ success: false, err });
+      return;
+    }
   });
 
 export default authRouter;
