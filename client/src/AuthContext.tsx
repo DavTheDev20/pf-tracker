@@ -1,8 +1,8 @@
-import { createContext, useState, useEffect, FunctionComponent } from "react";
+import { createContext, useState, useEffect, ReactNode } from "react";
 
-const AuthContext = createContext();
+const AuthContext = createContext({});
 
-export const AuthProvider = ({ children }: { children: FunctionComponent }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,8 +30,8 @@ export const AuthProvider = ({ children }: { children: FunctionComponent }) => {
     setLoading(false);
   };
 
-  const login = async (email, password) => {
-    const response = await fetch("https://yourapi.com/login", {
+  const login = async (email: string, password: string) => {
+    const response = await fetch("http://localhost:8080/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: FunctionComponent }) => {
   };
 
   const logout = async () => {
-    await fetch("https://yourapi.com/logout", {
+    await fetch("http://localhost:8080/api/auth/logout", {
       method: "POST",
       credentials: "include",
     });
@@ -57,3 +57,5 @@ export const AuthProvider = ({ children }: { children: FunctionComponent }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;

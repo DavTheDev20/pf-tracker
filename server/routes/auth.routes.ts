@@ -10,10 +10,8 @@ const COOKIE_SECRET = process.env.COOKIE_SECRET;
 type UserType = {
   firstName: string;
   lastName: string;
-  username: string;
   email: string;
   password: string;
-  accounts?: Array<object>;
 };
 
 /**
@@ -77,7 +75,14 @@ authRouter
           });
           try {
             const result = await newUser.save();
-            const token = jwt.sign({ email: result.email }, <string>JWT_SECRET);
+            const token = jwt.sign(
+              {
+                email: result.email,
+                firstName: result.firstName,
+                lastName: result.lastName,
+              },
+              <string>JWT_SECRET
+            );
             res.cookie("token", token, {
               httpOnly: true,
               sameSite: "strict",
@@ -130,7 +135,7 @@ authRouter
     //@ts-ignore
     bcrypt.compare(body.password, user.password, (bcryptErr, result) => {
       if (bcryptErr) {
-        res.status(400).json({ success: false, bcryptErr });
+        res.status(500).json({ success: false, bcryptErr });
         return;
       }
       if (result === false) {
@@ -138,7 +143,14 @@ authRouter
         return;
       }
 
-      const token = jwt.sign({ email: user.email }, <string>JWT_SECRET);
+      const token = jwt.sign(
+        {
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+        <string>JWT_SECRET
+      );
       res.cookie("token", token, {
         httpOnly: true,
         sameSite: "strict",
@@ -175,8 +187,13 @@ authRouter
         return;
       }
 
-      const decoded: any = jwt.verify(token, <string>process.env.JWT_SECRET);
-      const user = await User.findOne({ email: decoded.email });
+      const decoded: Partial<{
+        email: string;
+        firstName: string;
+        lastName: string;
+        iat: Date;
+      }> = <object>jwt.verify(token, <string>process.env.JWT_SECRET);
+      let user = decoded;
       if (!user) {
         res.status(401).json({ user: null });
         return;
