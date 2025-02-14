@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import express from "express";
 import morgan from "morgan";
+import cors from "cors";
 import testRouter from "./routes/test.routes";
 import authRouter from "./routes/auth.routes";
 import accountRouter from "./routes/account.routes";
@@ -36,6 +37,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use("/api/test", testRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/accounts", accountRouter);

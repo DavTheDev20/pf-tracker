@@ -59,4 +59,7 @@ accountRouter
     }
   });
 
+// TODO: Create an endpoint to get the balances for debt and equity
+// Return an object with debt and equity fields
+
 export default accountRouter;

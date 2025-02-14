@@ -40,6 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (response.ok) {
       await checkAuth(); // Refresh auth state
+    } else if (response.status === 400) {
+      alert("Invalid login");
     }
   };
 

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Add Description and Add Another Date Field (transactionDate)
 const transactionSchema = new mongoose.Schema(
   {
     accountId: mongoose.Types.ObjectId,
