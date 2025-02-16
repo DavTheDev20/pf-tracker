@@ -49,7 +49,7 @@ export default function Accounts() {
 
   return (
     <div style={{ width: "100vw" }}>
-      <h1>Accounts</h1>
+      <h1 style={{color: '#E5E7EB', marginBottom: '3%'}}>Accounts</h1>
       <div style={{ display: "flex", width: "100%", flexWrap: "wrap" }}>
         <div
           style={{
@@ -58,7 +58,7 @@ export default function Accounts() {
             padding: "2% 6% 2% 4%",
             overflowY: "auto",
             overflowX: "hidden",
-            border: "1px solid #E5E7EB",
+            border: "5px solid #E5E7EB",
             borderRadius: "10px",
             display: "flex",
             flexDirection: "column",
@@ -71,7 +71,8 @@ export default function Accounts() {
         </div>
         <div
           style={{
-            border: "2px solid #E5E7EB",
+            border: "5px solid #E5E7EB",
+            borderRadius: '10px',
             width: "30vw",
             padding: "1.5vw",
             marginLeft: "5%",

@@ -60,6 +60,6 @@ accountRouter
   });
 
 // TODO: Create an endpoint to get the balances for debt and equity
-// Return an object with debt and equity fields
+// Return an object with debt and equity fields and net worth
 
 export default accountRouter;
