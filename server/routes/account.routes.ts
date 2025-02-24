@@ -57,9 +57,64 @@ accountRouter
     } catch (err) {
       return res.status(400).json({ success: false, err });
     }
-  });
+  })
+  .put("/update/:accountId", verifyToken, async (req, res) => {
+    const accountId = req.params["accountId"];
+    const {
+      body,
+    }: {
+      body: {
+        name?: string;
+        type?: string;
+        balance?: string;
+      };
+    } = req;
+    try {
+      const account = await Account.findOne({ _id: accountId });
+      const updateResponse = await Account.updateOne(
+        { _id: account?._id },
+        {
+          userId: account?.userId,
+          name: body.name || account?.name,
+          type: body.type || account?.type,
+          balance: body.balance || account?.balance,
+        }
+      );
+      if (updateResponse.modifiedCount === 1) {
+        return res
+          .status(200)
+          .json({ success: true, response: updateResponse });
+      }
+      return res.status(400).json({ success: false });
+    } catch (err) {
+      return res.status(400).json({ success: false, error: err });
+    }
+  })
+  .get("/balances", verifyToken, async (req, res) => {
+    const user = await User.findOne({ email: req.user.email });
+    const accounts = await Account.find({ userId: user?._id });
 
-// TODO: Create an endpoint to get the balances for debt and equity
-// Return an object with debt and equity fields and net worth
+    const equityBal = accounts
+      .filter(
+        (acct) =>
+          acct.type.toLowerCase() === "checking" ||
+          acct.type.toLowerCase() === "savings"
+      )
+      .reduce((accumulator, currVal) => accumulator + currVal.balance, 0);
+
+    const debtBal =
+      accounts
+        .filter(
+          (acct) =>
+            acct.type?.toLowerCase() === "credit card" ||
+            acct.type?.toLowerCase() === "loan"
+        )
+        .reduce((accumulator, currVal) => accumulator + currVal.balance, 0) *
+      -1;
+
+    const netWorth = equityBal + debtBal;
+
+    res.json({ equityBal, debtBal, netWorth });
+  });
 
 export default accountRouter;

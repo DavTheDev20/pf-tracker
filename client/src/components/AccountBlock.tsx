@@ -13,22 +13,30 @@ export default function AccountBlock({
     <div
       style={{
         border: "2px solid #E5E7EB",
-        backgroundColor: "#00B4D8",
+        backgroundColor: "#0A192F",
         width: "100%",
-        padding: "2%",
+        padding: "4%",
         borderRadius: "10px",
         color: "#E5E7EB",
-        marginBottom: "1.5%",
+        marginBottom: "2%",
         display: "flex",
-        flexDirection: "column",
+        flexWrap: "wrap",
+        flexDirection: "row",
         height: "15vh",
         justifyContent: "center",
+        alignItems: "center",
       }}
     >
-      <p style={{ fontWeight: "bold" }}>{accountData.name}</p>
-      <p>Account Type: {accountData.type}</p>
-      <p>Balance: {formatAccounting(accountData.balance)}</p>
-      <button style={{ width: "25%", cursor: "pointer" }}>Edit</button>
+      <p style={{ fontWeight: "bold", width: "65%" }}>
+        {accountData.name} (
+        <small>{accountData.type.toLocaleUpperCase("en-US")}</small>)
+        <p style={{ fontSize: "1rem" }}>
+          {formatAccounting(accountData.balance)}
+        </p>
+      </p>
+      <button style={{ width: "15%", cursor: "pointer", marginTop: "2%" }}>
+        Edit
+      </button>
     </div>
   );
 }

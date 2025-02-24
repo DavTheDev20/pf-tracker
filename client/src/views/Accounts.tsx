@@ -4,6 +4,11 @@ import { formatAccounting } from "../utils/formatter";
 
 export default function Accounts() {
   const [accounts, setAccounts] = useState([]);
+  const [balances, setBalances] = useState({
+    equityBal: 0,
+    debtBal: 0,
+    netWorth: 0,
+  });
 
   const getAccounts = async () => {
     const response = await fetch("http://localhost:8080/api/accounts", {
@@ -14,8 +19,21 @@ export default function Accounts() {
     setAccounts(data.accounts);
   };
 
+  const getBalances = async () => {
+    const response = await fetch(
+      "http://localhost:8080/api/accounts/balances",
+      {
+        credentials: "include",
+      }
+    );
+    const data: { equityBal: number; debtBal: number; netWorth: number } =
+      await response.json();
+    setBalances(data);
+  };
+
   useEffect(() => {
     getAccounts();
+    getBalances();
   }, []);
 
   const addAccount = async (e: FormEvent) => {
@@ -49,12 +67,12 @@ export default function Accounts() {
 
   return (
     <div style={{ width: "100vw" }}>
-      <h1 style={{color: '#E5E7EB', marginBottom: '3%'}}>Accounts</h1>
+      <h1 style={{ color: "#E5E7EB", marginBottom: "3%" }}>Accounts</h1>
       <div style={{ display: "flex", width: "100%", flexWrap: "wrap" }}>
         <div
           style={{
             height: "50vh",
-            width: "35vw",
+            width: "45vw",
             padding: "2% 6% 2% 4%",
             overflowY: "auto",
             overflowX: "hidden",
@@ -72,11 +90,11 @@ export default function Accounts() {
         <div
           style={{
             border: "5px solid #E5E7EB",
-            borderRadius: '10px',
-            width: "30vw",
+            borderRadius: "10px",
+            width: "20vw",
             padding: "1.5vw",
             marginLeft: "5%",
-            height: "100px",
+            height: "15%",
             color: "#E5E7EB",
           }}
         >
@@ -91,33 +109,15 @@ export default function Accounts() {
           >
             <tr>
               <td>Equity</td>
-              <td>
-                {formatAccounting(
-                  accounts
-                    .filter(
-                      (acct) =>
-                        acct.type.toLowerCase() === "checking" ||
-                        acct.type.toLowerCase() === "savings"
-                    )
-                    .reduce(
-                      (accumulator, currVal) => accumulator + currVal.balance,
-                      0
-                    )
-                )}
-              </td>
+              <td>{formatAccounting(balances.equityBal)}</td>
             </tr>
             <tr>
               <td>Debt</td>
-              <td>
-                {formatAccounting(
-                  accounts
-                    .filter((acct) => acct.type.toLowerCase() === "credit card")
-                    .reduce(
-                      (accumulator, currVal) => accumulator + currVal.balance,
-                      0
-                    ) * -1
-                )}
-              </td>
+              <td>{formatAccounting(balances.debtBal)}</td>
+            </tr>
+            <tr>
+              <td>Net Worth (Estimate)</td>
+              <td>{formatAccounting(balances.netWorth)}</td>
             </tr>
           </table>
         </div>
