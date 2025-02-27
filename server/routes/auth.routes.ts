@@ -179,6 +179,32 @@ authRouter
     res.clearCookie("token", { path: "/" });
     res.status(200).json({ success: true });
   })
+  /**
+   * @swagger
+   * paths:
+   *  /api/auth/auth-status:
+   *   get:
+   *     summary: Auth Status
+   *     description: Gets the status of the currently logged in user and returns the details of the user if successful
+   *     responses:
+   *       200:
+   *         content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  success:
+   *                    type: boolean
+   *                  user:
+   *                    type: object
+   *                    properties:
+   *                      email:
+   *                        type: string
+   *                      firstName:
+   *                        type: string
+   *                      lastName:
+   *                        type: string
+   */
   .get("/auth-status", async (req, res) => {
     try {
       const token = req.headers.cookie?.split("=")[1];
@@ -199,6 +225,7 @@ authRouter
         return;
       }
       res.status(200).json({
+        success: true,
         user: {
           email: user?.email,
           firstName: user?.firstName,

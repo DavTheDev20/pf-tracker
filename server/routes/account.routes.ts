@@ -13,6 +13,16 @@ type Request = ExpressRequest & {
 };
 
 accountRouter
+  /**
+   * @swagger
+   * /api/accounts:
+   *   get:
+   *     summary: Get Accounts
+   *     description: Returns all the accounts associated with a user
+   *     responses:
+   *       200:
+   *         description: A single user
+   */
   // @ts-ignore
   //Retrieve Accounts
   .get("/", verifyToken, async (req: Request, res) => {
