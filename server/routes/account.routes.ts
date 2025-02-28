@@ -21,7 +21,32 @@ accountRouter
    *     description: Returns all the accounts associated with a user
    *     responses:
    *       200:
-   *         description: A single user
+   *         content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  success:
+   *                    type: boolean
+   *                  accounts:
+   *                     type: array
+   *                     items:
+   *                        type: object
+   *                        properties:
+   *                          userId:
+   *                            type: string
+   *                          name:
+   *                            type: string
+   *                          type:
+   *                            type: string
+   *                          balance:
+   *                            type: number
+   *                          createdAt:
+   *                            type: string
+   *                            format: date-time
+   *                          updatedAt:
+   *                            type: string
+   *                            format: date-time
    */
   // @ts-ignore
   //Retrieve Accounts
@@ -39,6 +64,36 @@ accountRouter
 
     res.json({ message: "This is a protected route..." });
   })
+  /**
+   * @swagger
+   * /api/accounts/add:
+   *  post:
+   *    summary: Add Account
+   *    description: Adds new account for a user
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            type: object
+   *            properties:
+   *              name:
+   *                type: string
+   *              type:
+   *                type: string
+   *              balance:
+   *                type: number
+   *    responses:
+   *      200:
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                success:
+   *                  type: boolean
+   *
+   */
   // @ts-ignore
   // Add Account
   .post("/add", verifyToken, async (req: Request, res) => {
@@ -49,7 +104,7 @@ accountRouter
     try {
       const {
         body,
-      }: { body: { name: string; type: string; balance: string } } = req;
+      }: { body: { name: string; type: string; balance: number } } = req;
       if (!body.name || !body.type || !body.balance) {
         return res.status(400).json({
           success: false,
@@ -68,6 +123,38 @@ accountRouter
       return res.status(400).json({ success: false, err });
     }
   })
+  /**
+   * @swagger
+   * /api/accounts/update/:accountId:
+   *  put:
+   *    summary: Edit Account
+   *    description: Edits existing account for a user
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            type: object
+   *            properties:
+   *              name:
+   *                type: string
+   *              type:
+   *                type: string
+   *              balance:
+   *                type: number
+   *    responses:
+   *          200:
+   *            content:
+   *              application/json:
+   *                schema:
+   *                  type: object
+   *                  properties:
+   *                    success:
+   *                      type: boolean
+   *
+   */
+
+  // @ts-ignore
   .put("/update/:accountId", verifyToken, async (req, res) => {
     const accountId = req.params["accountId"];
     const {
@@ -76,7 +163,7 @@ accountRouter
       body: {
         name?: string;
         type?: string;
-        balance?: string;
+        balance?: number;
       };
     } = req;
     try {
@@ -91,25 +178,47 @@ accountRouter
         }
       );
       if (updateResponse.modifiedCount === 1) {
-        return res
-          .status(200)
-          .json({ success: true, response: updateResponse });
+        return res.status(200).json({ success: true });
       }
       return res.status(400).json({ success: false });
     } catch (err) {
       return res.status(400).json({ success: false, error: err });
     }
   })
-  .get("/balances", verifyToken, async (req, res) => {
+  /**
+   * @swagger
+   *  /api/accounts/balances:
+   *    get:
+   *      summary: Account Balances
+   *      description: Retrieives balances and calculates Equity, Debt, and Net Worth amounts
+   *      responses:
+   *        200:
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  equityBal:
+   *                    type: number
+   *                  debtBal:
+   *                    type: number
+   *                  netWorth:
+   *                    type: number
+   */
+
+  // @ts-ignore
+  .get("/balances", verifyToken, async (req: Request, res) => {
     const user = await User.findOne({ email: req.user.email });
     const accounts = await Account.find({ userId: user?._id });
 
     const equityBal = accounts
-      .filter(
-        (acct) =>
-          acct.type.toLowerCase() === "checking" ||
-          acct.type.toLowerCase() === "savings"
+      .filter((acct) =>
+        acct.type
+          ? acct.type.toLowerCase() === "checking" ||
+            acct.type.toLowerCase() === "savings"
+          : null
       )
+      //@ts-ignore
       .reduce((accumulator, currVal) => accumulator + currVal.balance, 0);
 
     const debtBal =
@@ -119,12 +228,13 @@ accountRouter
             acct.type?.toLowerCase() === "credit card" ||
             acct.type?.toLowerCase() === "loan"
         )
+        // @ts-ignore
         .reduce((accumulator, currVal) => accumulator + currVal.balance, 0) *
       -1;
 
     const netWorth = equityBal + debtBal;
 
-    res.json({ equityBal, debtBal, netWorth });
+    res.status(200).json({ equityBal, debtBal, netWorth });
   });
 
 export default accountRouter;

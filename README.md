@@ -11,3 +11,5 @@ Open source application for tracking ones personal finances.
    - COOKIE_SECRET
 3. Run the server using the `npm run server` command in the / directory
 4. Run the client using the `npm run client` command in the / directory
+
+Swagger API Docs: [http://localhost:8080/api-docs](http://localhost:8080/api-docs)
