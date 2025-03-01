@@ -10,6 +10,11 @@ export default function Accounts() {
     netWorth: 0,
   });
 
+  const handleAcctUpdate = () => {
+    getAccounts();
+    getBalances();
+  };
+
   const getAccounts = async () => {
     const response = await fetch("http://localhost:8080/api/accounts", {
       credentials: "include",
@@ -84,7 +89,13 @@ export default function Accounts() {
           }}
         >
           {accounts.map((acctData) => {
-            return <AccountBlock accountData={acctData} key={acctData._id} />;
+            return (
+              <AccountBlock
+                accountData={acctData}
+                key={acctData._id}
+                onUpdate={handleAcctUpdate}
+              />
+            );
           })}
         </div>
         <div
@@ -115,7 +126,7 @@ export default function Accounts() {
               <td>Debt</td>
               <td>{formatAccounting(balances.debtBal)}</td>
             </tr>
-            <tr>
+            <tr style={{ color: "#A3E635" }}>
               <td>Net Worth (Estimate)</td>
               <td>{formatAccounting(balances.netWorth)}</td>
             </tr>

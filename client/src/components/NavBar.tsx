@@ -40,7 +40,7 @@ export default function NavBar({
         color: "#E5E7EB",
       }}
     >
-      <h3 style={{ color: "#A3E635", fontSize: '1.25rem' }}>Budget Butler</h3>
+      <h3 style={{ color: "#A3E635", fontSize: "1.25rem" }}>Budget Butler</h3>
       {user ? (
         <>
           <h4 style={{ margin: "10% 0", color: "#E5E7EB" }}>
@@ -92,7 +92,7 @@ export default function NavBar({
           <a style={linkStyles} onClick={() => setPageFunc("transactions")}>
             Transactions
             <img
-              src="https://img.icons8.com/?size=100&id=ivCV8Ffm25sy&format=png&color=FFFFFF"
+              src="https://img.icons8.com/?size=100&id=ounKChUYWi9r&format=png&color=FFFFFF"
               width={25}
               height={25}
               style={
@@ -103,9 +103,9 @@ export default function NavBar({
             />
           </a>
           <a style={linkStyles} onClick={() => setPageFunc("insights")}>
-            Insights
+            Expenses
             <img
-              src="https://img.icons8.com/?size=100&id=L60ScYWkMpdx&format=png&color=FFFFFF"
+              src="https://img.icons8.com/?size=100&id=ivCV8Ffm25sy&format=png&color=FFFFFF"
               width={25}
               height={25}
               style={
