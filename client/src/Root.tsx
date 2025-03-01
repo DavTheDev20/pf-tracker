@@ -2,6 +2,7 @@ import Accounts from "./views/Accounts";
 import { useContext } from "react";
 import AuthContext from "./AuthContext";
 import Dashboard from "./views/Dashboard";
+import Expenses from "./views/Expenses";
 
 export default function Root({ page }: { page: string }) {
   const { user } = useContext(AuthContext);
@@ -19,6 +20,8 @@ export default function Root({ page }: { page: string }) {
         <Dashboard />
       ) : page == "accounts" ? (
         <Accounts />
+      ) : page == "expenses" ? (
+        <Expenses />
       ) : null}
       {}
       {}

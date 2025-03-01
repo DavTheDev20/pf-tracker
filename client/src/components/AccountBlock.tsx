@@ -70,7 +70,7 @@ export default function AccountBlock({
     <>
       <div style={accountBlockStyles}>
         <p style={{ fontWeight: "bold", width: "65%" }}>
-          {accountData.name} (
+          <span style={{ color: "#A3E635" }}>{accountData.name}</span> (
           <small>{accountData.type.toLocaleUpperCase("en-US")}</small>)
           <p style={{ fontSize: "1rem" }}>
             {formatAccounting(accountData.balance)}

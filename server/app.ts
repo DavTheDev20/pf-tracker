@@ -9,6 +9,7 @@ import accountRouter from "./routes/account.routes";
 import mongoose from "mongoose";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
+import expenseRouter from "./routes/expense.routes";
 
 const app = express();
 const PORT = 8080;
@@ -37,10 +38,11 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-app.use(cors({ origin:"http://localhost:5173", credentials: true}));
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use("/api/test", testRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/accounts", accountRouter);
+app.use("/api/expenses", expenseRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}...`);

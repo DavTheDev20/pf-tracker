@@ -89,6 +89,19 @@ export default function NavBar({
               }
             />
           </a>
+          <a style={linkStyles} onClick={() => setPageFunc("expenses")}>
+            Expenses
+            <img
+              src="https://img.icons8.com/?size=100&id=ivCV8Ffm25sy&format=png&color=FFFFFF"
+              width={25}
+              height={25}
+              style={
+                page == "expenses"
+                  ? { marginLeft: "10px", borderBottom: "2px solid #b4e35a" }
+                  : { marginLeft: "10px" }
+              }
+            />
+          </a>
           <a style={linkStyles} onClick={() => setPageFunc("transactions")}>
             Transactions
             <img
@@ -97,19 +110,6 @@ export default function NavBar({
               height={25}
               style={
                 page == "transactions"
-                  ? { marginLeft: "10px", borderBottom: "2px solid #b4e35a" }
-                  : { marginLeft: "10px" }
-              }
-            />
-          </a>
-          <a style={linkStyles} onClick={() => setPageFunc("insights")}>
-            Expenses
-            <img
-              src="https://img.icons8.com/?size=100&id=ivCV8Ffm25sy&format=png&color=FFFFFF"
-              width={25}
-              height={25}
-              style={
-                page == "insights"
                   ? { marginLeft: "10px", borderBottom: "2px solid #b4e35a" }
                   : { marginLeft: "10px" }
               }
