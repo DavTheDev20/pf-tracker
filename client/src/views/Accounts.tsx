@@ -61,6 +61,7 @@ export default function Accounts() {
     const data = await response.json();
     if (data.success) {
       getAccounts();
+      getBalances();
       e.target.name.value = "";
       e.target.type.value = "";
       e.target.balance.value = "";

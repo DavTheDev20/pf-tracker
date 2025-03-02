@@ -1,4 +1,8 @@
 import express from "express";
+import verifyToken from "../middleware/verifyToken";
+import User from "../models/user.model";
+import Expense from "../models/expense.model";
+import Account from "../models/account.model";
 
 const testRouter = express.Router();
 
@@ -12,23 +16,40 @@ const testRouter = express.Router();
  *       200:
  *         description: A single user
  */
-testRouter.get("", (req, res) => {
-  res.status(200).json({
-    accountNum: "2049812",
-    accountHolder: "Nina Goldfarb",
-    accountBal: 12492.34,
-    transactions: [
-      {
-        id: 492,
-        type: "credit",
-        category: "shopping",
-        pending: false,
-        name: "Ulta Beauty",
-        amount: 32.49,
-      },
-    ],
-  });
-  return;
+testRouter.get("/remaining-spending", verifyToken, async (req, res) => {
+  const user = await User.findOne({ email: req.user.email });
+  const accounts = await Account.find({ userId: user?._id });
+  const expenses = await Expense.find({ userId: user?._id });
+
+  const buffer = 200; // Make this a part of the user model...
+  const savingsForPeriod = 6500;
+
+  const totalCheckingBalance = accounts
+    .filter((account) => account.type?.toLowerCase() === "checking")
+    .reduce((total, currentVal) => total + currentVal.balance, 0);
+
+  console.log("Total checking balance = " + totalCheckingBalance);
+
+  const totalUnpaidExpenses = expenses
+    .filter((expense) => expense.isPaid === false)
+    .reduce((total, currentVal) => total + currentVal.amount, 0);
+
+  console.log("Total Expenses Remaining = " + totalUnpaidExpenses);
+
+  const totalCreditCardBalances = accounts
+    .filter((account) => account.type?.toLowerCase() === "credit card")
+    .reduce((total, currentVal) => total + currentVal.balance, 0);
+
+  console.log("Total Credit Card Balances = " + totalCreditCardBalances);
+
+  const remainingSpendingFunds =
+    totalCheckingBalance -
+    buffer -
+    totalUnpaidExpenses -
+    totalCreditCardBalances -
+    savingsForPeriod;
+
+  res.status(200).json({ success: true, remainingSpendingFunds });
 });
 
 export default testRouter;

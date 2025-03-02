@@ -1,8 +1,11 @@
+import { useDebugValue, useEffect, useState } from "react";
 import InfoCard from "../components/InfoCard";
 import TransactionsTable from "../components/TransactionsTable";
 import { formatAccounting } from "../utils/formatter";
 
 export default function Dashboard() {
+  const [remainingSpending, setRemainingSpending] = useState(0);
+
   const sampleTransData: {
     date: Date;
     description: string;
@@ -33,6 +36,30 @@ export default function Dashboard() {
     { name: "Xfinity Wifi", date: new Date("3/05/2025"), amount: 65 },
   ];
 
+  const getspendingAmount = async () => {
+    const response = await fetch(
+      "http://localhost:8080/api/test/remaining-spending",
+      {
+        method: "GET",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      setRemainingSpending(data.remainingSpendingFunds);
+      return;
+    }
+
+    alert("Something went wrong...");
+  };
+
+  useEffect(() => {
+    getspendingAmount();
+  }, []);
+
   return (
     <div style={{ width: "95vw" }}>
       <h1 style={{ color: "#E5E7EB " }}>Dashboard</h1>
@@ -57,7 +84,10 @@ export default function Dashboard() {
         />
         <InfoCard
           bgColor="#00B4D8"
-          content={{ heading: "Spending Remaining", body: "$266.83" }}
+          content={{
+            heading: "Spending Remaining",
+            body: formatAccounting(remainingSpending),
+          }}
         />
         <InfoCard
           bgColor="#0A192F"
