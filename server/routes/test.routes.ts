@@ -21,8 +21,8 @@ testRouter.get("/remaining-spending", verifyToken, async (req, res) => {
   const accounts = await Account.find({ userId: user?._id });
   const expenses = await Expense.find({ userId: user?._id });
 
-  const buffer = 200; // Make this a part of the user model...
-  const savingsForPeriod = 6500;
+  const buffer = user?.spendingBuffer; // Make this a part of the user model...
+  const savingsForPeriod = user?.periodSavings;
 
   const totalCheckingBalance = accounts
     .filter((account) => account.type?.toLowerCase() === "checking")

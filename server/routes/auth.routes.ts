@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model";
+import verifyToken from "../middleware/verifyToken";
 
 const authRouter = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -72,6 +73,8 @@ authRouter
             lastName: body.lastName,
             email: body.email,
             password: hash,
+            spendingBuffer: 0,
+            periodSavings: 0,
           });
           try {
             const result = await newUser.save();
@@ -237,6 +240,54 @@ authRouter
       res.status(500).json({ success: false, err });
       return;
     }
+  })
+  .get("/user-info", verifyToken, async (req, res) => {
+    const user = await User.findOne({ email: req.user.email });
+
+    res.status(200).json({
+      success: true,
+      userInfo: {
+        spendingBuffer: user?.spendingBuffer,
+        periodSavings: user?.periodSavings,
+      },
+    });
+  })
+  .put("/update/user-info", verifyToken, async (req, res) => {
+    if (req.body.spendingBuffer === null && req.body.periodSavings === null) {
+      res.status(400).json({
+        success: false,
+        error: "Both elements in request body cannot be null",
+      });
+      return;
+    }
+
+    let editSpendBufferResult;
+    let editPeriodSavingsResult;
+
+    if (req.body.spendingBuffer) {
+      editSpendBufferResult = await User.updateOne(
+        { email: req.user.email },
+        {
+          spendingBuffer: req.body.spendingBuffer,
+        }
+      );
+    }
+
+    if (req.body.periodSavings) {
+      editPeriodSavingsResult = await User.updateOne(
+        { email: req.user.email },
+        {
+          periodSavings: req.body.periodSavings,
+        }
+      );
+    }
+
+    if (editSpendBufferResult || editPeriodSavingsResult) {
+      res.status(200).json({ success: true });
+      return;
+    }
+
+    res.status(500).json({ success: false });
   });
 
 export default authRouter;

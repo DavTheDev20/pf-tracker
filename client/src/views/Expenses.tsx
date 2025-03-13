@@ -108,6 +108,30 @@ export default function Expenses() {
           }}
         >
           <h2 style={{ marginBottom: "2%", color: "#E5E7EB" }}>Expenses</h2>
+          <button
+            onClick={() => {
+              expenses.forEach(async (expense) => {
+                const response = await fetch(
+                  `http://localhost:8080/api/expenses/update/${expense._id}`,
+                  {
+                    method: "PUT",
+                    credentials: "include",
+                    body: JSON.stringify({ isPaid: false }),
+                    headers: { "Content-Type": "application/json" },
+                  }
+                );
+                const data = await response.json();
+                if (data.success) {
+                  getExpenses();
+                  getUnpaidTotal();
+                  return;
+                }
+                alert("Something went wrong...");
+              });
+            }}
+          >
+            Reset Payment Status
+          </button>
           {expenses.map((expense) => {
             return <ExpenseBlock expense={expense} handleChange={onChange} />;
           })}
