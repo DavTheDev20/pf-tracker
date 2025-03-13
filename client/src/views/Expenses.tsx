@@ -130,7 +130,7 @@ export default function Expenses() {
               });
             }}
           >
-            Reset Payment Status
+            Reset All Payment Statuses
           </button>
           {expenses.map((expense) => {
             return <ExpenseBlock expense={expense} handleChange={onChange} />;
