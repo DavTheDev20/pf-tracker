@@ -7,11 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "cd server && npx tsc --watch",
     "server": "cd server && nodemon ./out/app.js",
-    "client": "cd client && npm run dev"
+    "client": "cd client && npm run dev",
+    "dev": "concurrently -c red,blue -n server,client \"npm run server\" \"npm run client\""
   },
   "author": "Davin Reid",
   "license": "MIT",
   "dependencies": {
+    "concurrently": "^9.2.0",
     "pf-tracker": "file:"
   }
 }
