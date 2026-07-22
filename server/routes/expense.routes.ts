@@ -7,12 +7,14 @@ const expenseRouter = express.Router();
 
 expenseRouter
   .get("/", verifyToken, async (req, res) => {
+    //@ts-ignore - user object present in request
     const user = await User.findOne({ email: req.user.email });
     const expenses = await Expense.find({ userId: user?._id });
 
     res.status(200).json({ success: true, expenses });
   })
   .post("/add", verifyToken, async (req, res) => {
+    //@ts-ignore - user object present in request
     const user = await User.findOne({ email: req.user.email });
 
     const {
@@ -94,6 +96,7 @@ expenseRouter
     }
   })
   .get("/unpaid-expenses", verifyToken, async (req, res) => {
+    //@ts-ignore - user object present in request
     const user = await User.findOne({ email: req.user.email });
 
     const expenses = await Expense.find({ userId: user?.id });
@@ -102,7 +105,7 @@ expenseRouter
       .filter((expense) => {
         return expense.isPaid == false;
       })
-      .reduce((total, currentVal) => total + currentVal.amount, 0);
+      .reduce((total, currentVal) => total + (currentVal?.amount ?? 0), 0);
 
     res.status(200).json({ success: true, unpaidExpenseTotal });
   });

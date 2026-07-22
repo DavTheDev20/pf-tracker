@@ -1,18 +1,20 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config();
 
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import testRouter from "./routes/test.routes";
-import authRouter from "./routes/auth.routes";
-import accountRouter from "./routes/account.routes";
 import mongoose from "mongoose";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
+
+import testRouter from "./routes/test.routes";
+import authRouter from "./routes/auth.routes";
+import accountRouter from "./routes/account.routes";
 import expenseRouter from "./routes/expense.routes";
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT;
 const DB_URI = process.env.MONGODB_URI;
 
 const swaggerOptions = {

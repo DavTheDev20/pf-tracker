@@ -17,6 +17,7 @@ const testRouter = express.Router();
  *         description: A single user
  */
 testRouter.get("/remaining-spending", verifyToken, async (req, res) => {
+  //@ts-ignore - user object present in request
   const user = await User.findOne({ email: req.user.email });
   const accounts = await Account.find({ userId: user?._id });
   const expenses = await Expense.find({ userId: user?._id });
@@ -26,28 +27,28 @@ testRouter.get("/remaining-spending", verifyToken, async (req, res) => {
 
   const totalCheckingBalance = accounts
     .filter((account) => account.type?.toLowerCase() === "checking")
-    .reduce((total, currentVal) => total + currentVal.balance, 0);
+    .reduce((total, currentVal) => total + (currentVal?.balance ?? 0), 0);
 
   console.log("Total checking balance = " + totalCheckingBalance);
 
   const totalUnpaidExpenses = expenses
     .filter((expense) => expense.isPaid === false)
-    .reduce((total, currentVal) => total + currentVal.amount, 0);
+    .reduce((total, currentVal) => total + (currentVal?.amount ?? 0), 0);
 
   console.log("Total Expenses Remaining = " + totalUnpaidExpenses);
 
   const totalCreditCardBalances = accounts
     .filter((account) => account.type?.toLowerCase() === "credit card")
-    .reduce((total, currentVal) => total + currentVal.balance, 0);
+    .reduce((total, currentVal) => total + (currentVal?.balance ?? 0), 0);
 
   console.log("Total Credit Card Balances = " + totalCreditCardBalances);
 
   const remainingSpendingFunds =
     totalCheckingBalance -
-    buffer -
+    (buffer ?? 0) -
     totalUnpaidExpenses -
     totalCreditCardBalances -
-    savingsForPeriod;
+    (savingsForPeriod ?? 0);
 
   res.status(200).json({ success: true, remainingSpendingFunds });
 });

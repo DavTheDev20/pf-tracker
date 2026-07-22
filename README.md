@@ -9,6 +9,7 @@ Open source application for tracking ones personal finances.
    - MONGODB_URI
    - JWT_SECRET
    - COOKIE_SECRET
+   - PORT
 3. Run the server using the `npm run server` command in the / directory
 4. Run the client using the `npm run client` command in the / directory
 

@@ -242,6 +242,7 @@ authRouter
     }
   })
   .get("/user-info", verifyToken, async (req, res) => {
+    //@ts-ignore - user object present in request
     const user = await User.findOne({ email: req.user.email });
 
     res.status(200).json({
@@ -266,6 +267,7 @@ authRouter
 
     if (req.body.spendingBuffer) {
       editSpendBufferResult = await User.updateOne(
+        //@ts-ignore - user object present in request
         { email: req.user.email },
         {
           spendingBuffer: req.body.spendingBuffer,
@@ -275,6 +277,7 @@ authRouter
 
     if (req.body.periodSavings) {
       editPeriodSavingsResult = await User.updateOne(
+        //@ts-ignore - user object present in request
         { email: req.user.email },
         {
           periodSavings: req.body.periodSavings,
